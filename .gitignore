@@ -1,23 +1,18 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-.Python
-*.so
 
 # Virtual environments
 .venv/
 venv/
 env/
-ENV/
 
 # Environment variables / API keys
 .env
 .env.*
 !.env.example
 
-# Jupyter Notebook checkpoints
+# Jupyter
 .ipynb_checkpoints/
 
 # Streamlit
@@ -26,11 +21,13 @@ ENV/
 # Generated files
 generated_image.png
 generated_audio.wav
+generated_video.mp4
 *.wav
 *.mp3
 *.mp4
 *.mov
 *.avi
+*.webm
 
 # Uploaded sample files
 sample_image.jpg
@@ -39,20 +36,13 @@ sample_audio.mp3
 sample_audio.wav
 sample_video.mp4
 
-# OS files
+# OS / IDE
 .DS_Store
 Thumbs.db
-
-# IDE files
 .vscode/
 .idea/
 
-# Logs
+# Logs/cache
 *.log
-
-# Build/cache
 .cache/
 .pytest_cache/
-dist/
-build/
-*.egg-info/
