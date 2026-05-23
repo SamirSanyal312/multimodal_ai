@@ -148,14 +148,9 @@ Example:
 Hello, this is my multimodal AI assignment.
 ```
 
-### Text → Video
+### Text → Video 
 
-This app uses a two-step pipeline:
-
-1. Text prompt → generated image using Stable Diffusion XL.
-2. Generated image → video using LTX Video image-to-video.
-
-This still satisfies the Text → Video flow because the user provides text and receives video as the final output.
+This directly generates a video from a text prompt using the Hugging Face model `Wan-AI/Wan2.2-TI2V-5B` through the `fal-ai` inference provider.
 
 ### Video → Text
 

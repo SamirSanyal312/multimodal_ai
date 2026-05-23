@@ -10,6 +10,7 @@ from PIL import Image
 from google import genai
 from google.genai import types
 from huggingface_hub import InferenceClient
+#from huggingface_hub import InferenceClient
 
 load_dotenv()
 
@@ -38,7 +39,7 @@ with st.sidebar:
         - **Image → Text:** Gemini 2.5 Flash
         - **Audio → Text:** Whisper Large v3 Turbo via Hugging Face
         - **Text → Audio:** Gemini TTS
-        - **Text → Video:** Stable Diffusion XL + LTX image-to-video pipeline
+        - **Text → Video:** Wan2.2-TI2V-5B via Hugging Face fal-ai
         - **Video → Text:** Gemini 2.5 Flash
         """
     )
@@ -245,48 +246,45 @@ elif task == "Text → Video":
 
     prompt = st.text_area(
         "Enter video prompt",
-        "A small robot walking through a futuristic classroom, cinematic lighting",
+        "A small robot walking through a futuristic classroom, cinematic lighting"
     )
 
     st.info(
-        "This performs Text → Image → Video. The user input is text and the final output is video. "
-        "This workaround is used because some Hugging Face providers expose LTX Video as image-to-video instead of direct text-to-video."
+        "This uses a direct Hugging Face Text → Video model: "
+        "Wan-AI/Wan2.2-TI2V-5B through the fal-ai provider."
     )
 
     if st.button("Generate Video"):
-        hf = get_hf_client()
-
         try:
-            with st.spinner("Step 1/2: Generating starter image from text..."):
-                starter_image = hf.text_to_image(
-                    prompt,
-                    model="stabilityai/stable-diffusion-xl-base-1.0",
+            if not HF_TOKEN:
+                st.error("Missing HF_TOKEN. Add it to your .env file.")
+                st.stop()
+
+            with st.spinner("Generating video directly from text. This can take 1–3 minutes..."):
+                video_client = InferenceClient(
+                    provider="fal-ai",
+                    api_key=HF_TOKEN,
                 )
-                starter_image_path = "text_to_video_starter_image.png"
-                starter_image.save(starter_image_path)
 
-            st.markdown("### Generated Starter Image")
-            st.image(starter_image, use_container_width=True)
-
-            with st.spinner("Step 2/2: Converting starter image to video. This can take 1–3 minutes..."):
-                with open(starter_image_path, "rb") as image_file:
-                    video_bytes = hf.image_to_video(
-                        image_file.read(),
-                        model="Lightricks/LTX-Video-0.9.8-13B-distilled",
-                    )
+                video = video_client.text_to_video(
+                    prompt,
+                    model="Wan-AI/Wan2.2-TI2V-5B",
+                )
 
                 output_video_path = "generated_video.mp4"
+
                 with open(output_video_path, "wb") as f:
-                    f.write(video_bytes)
+                    f.write(video)
 
             st.markdown("### Output Video")
             st.video(output_video_path)
+            st.success("Direct Text → Video generated successfully.")
 
         except Exception as e:
-            st.error(f"Text-to-video failed: {e}")
+            st.error(f"Direct Text-to-video failed: {e}")
             st.info(
-                "This depends on Hugging Face provider availability and credits. "
-                "For your assignment, screenshot this error if needed and explain the provider limitation."
+                "This usually means your Hugging Face token does not have access, "
+                "Inference Provider credits are unavailable, or fal-ai is temporarily busy."
             )
 
 elif task == "Video → Text":
